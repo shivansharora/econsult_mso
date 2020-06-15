@@ -78,12 +78,17 @@ const MedicalProblem = props => {
     const { open, onClose, className, ...rest } = props;
     const classes = useStyles()
     const mindate = new Date(moment());
-    console.log(mindate);
+    // console.log(mindate);
 
 
     const [relievingFactor, setRelievingFactor] = useState([]);
     const [aggravatingFactor, setAggravatingFactor] = useState([]);
     const [associatedSymtom, setAssociatedSymtom] = useState([]);
+    const [chiefComplaint,setChief] = useState();
+
+    function handleInputChange(event,value){
+        setChief(value)
+    }
 
     const {
         values,
@@ -95,16 +100,17 @@ const MedicalProblem = props => {
 
     function medicalProblem() {
         const formData = {
+            chief_complaint:chiefComplaint,
             duration: values.duration,
             duration_type: values.duration_type,
             progression: values.progression,
             onset: values.onset,
-            aggravating_factor: values.aggravatingFactor,
-            relieving_factor: values.relievingFactor,
+            aggravating_factor: aggravatingFactor,
+            relieving_factor: relievingFactor,
             current_status: values.current_status,
-            // start_datetime: start_datetime,
-            // end_datetime: end_datetime,
-            // associated_symtoms: associatedSymtoms,
+            start_datetime: values.start_datetime,
+            end_datetime: values.end_datetime,
+            associated_symtoms: associatedSymtom,
         }
         console.log(formData);
     }
@@ -134,12 +140,10 @@ const MedicalProblem = props => {
                                 <Autocomplete style={{ marginTop: -13 }}
                                     {...defaultProps}
                                     id=" chief_complaint"
+                                    onInputChange={handleInputChange}
                                     // chief complaint
                                     renderInput={params => <TextField {...params} label="Chief Complaint" margin="normal" />}
                                 />
-                                {errors.name && (
-                                    <p className={classes.danger}>{errors.name}</p>
-                                )}
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} >
                                 <CustomInput
@@ -357,14 +361,14 @@ const MedicalProblem = props => {
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={6} >
-                                {values.current_status === 'Resolved' && (
                                     <React.Fragment>
                                         <TextField
                                             id="end_datetime"
                                             label="End Date"
                                             type="date"
                                             name="end_datetime"
-                                            value={values.end_datetime || ''} onChange={handleChange}
+                                            value={values.end_datetime || ''} 
+                                            onChange={handleChange}
                                             className={classes.textField}
                                             InputLabelProps={{
                                                 shrink: true
@@ -375,7 +379,7 @@ const MedicalProblem = props => {
                                             <p className={classes.danger}>{errors.end_datetime}</p>
                                         )}
                                     </React.Fragment>
-                                )}
+                            
                             </Grid>
 
                             <Grid item xs={12} sm={6} md={6} >

@@ -1,14 +1,53 @@
-import React, { useState } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState,useEffect } from 'react';
+import { makeStyles,withStyles } from "@material-ui/core/styles";
 import Button from '../CustomButtons/Button';
 import Card from '../Card/Card';
 import CardHeader from '../Card/CardHeader';
 import CardBody from '../Card/CardBody';
 import Grid from '@material-ui/core/Grid';
-import Table from '../Table/Table';
+// import Table from '../Table/Table';
 import FamilyHistory from '../Forms/FamilyHistory';
 import EditIcon from '@material-ui/icons/Edit';
+import axios from '../../utils/axios';
+import Fab from '@material-ui/core/Fab';
 
+import {
+	createMuiTheme,
+} from "@material-ui/core/styles";
+
+import {
+	TableContainer,
+	Link,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableRow,
+	Tooltip
+} from '@material-ui/core';
+
+
+const theme = createMuiTheme({
+	overrides: {
+		MuiTooltip: {
+			tooltip: {
+				fontSize: "1em",
+				color: "black",
+				backgroundColor: "#84b786",
+			}
+		}
+	}
+});
+
+
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+		'&:nth-of-type(odd)': {
+			backgroundColor: theme.palette.action.hover,
+		},
+
+	},
+}))(TableRow);
 
 const styles = theme => ({
 	cardTitleWhite: {
@@ -22,13 +61,20 @@ const styles = theme => ({
 	},
 	icon:{
 		cursor:'pointer'
-	}
+	},
+	fab: {
+		margin: 2,
+		backgroundColor: '#66a668',
+		width: 50,
+		height: 42
+	},
 });
 
 const useStyles = makeStyles(styles);
 
 const FamilyHistoryList = () => {
 	const classes = useStyles();
+	const [family, setFamily] = useState([]);
 
 	const [openEdit, setOpenEdit] = useState(false);
 
@@ -40,6 +86,25 @@ const FamilyHistoryList = () => {
 		setOpenEdit(false);
 	};
 
+	useEffect(() => {
+		let mounted = true;
+
+		const fetchPhrases = () => {
+			axios.get('/api/family').then(response => {
+				if (mounted) {
+					setFamily(response.data.family);
+					//   console.log(response.data.phrases)
+				}
+			});
+		};
+
+		fetchPhrases();
+
+		return () => {
+			mounted = false;
+		};
+	}, []);
+
 	return (
 		<div className={classes.root} >
 			<Grid >
@@ -50,17 +115,44 @@ const FamilyHistoryList = () => {
 							<h4 className={classes.cardTitleWhite}>Family History</h4>
 						</CardHeader>
 						<CardBody>
-							<Table
-								tableHeaderColor="primary"
-								tableHead={["S.N", "Relationship", "Disease Name", "Action"]}
-								tableData={[
-									["1", "Father", "Diabaties", 
-									<EditIcon
-									onClick={handleEditOpen}
-									className={classes.icon}
-									/>]
-								]}
-							/>
+						<TableContainer className={classes.container}>
+								<Table stickyHeader aria-label="sticky table">
+									<TableHead >
+										<StyledTableRow >
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Relationship</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Disease Name</TableCell>
+											<TableCell align="right" style={{ backgroundColor: '#6a7075', color: 'white' }}>Actions</TableCell>
+										</StyledTableRow>
+									</TableHead>
+									<TableBody>
+										{family.map(family => (
+											<StyledTableRow
+												hover
+												key={family.id}
+											>
+												<TableCell>{family.relationship}</TableCell>
+												<TableCell>{family.disease_name}</TableCell>
+
+												<TableCell align="right">
+													<Link
+														color="inherit"
+														onClick={handleEditOpen}
+														variant="h6"
+													>
+														<Tooltip title="Edit" aria-label="Edit">
+															<Fab className={classes.fab}>
+
+																<EditIcon
+																/>
+															</Fab>
+														</Tooltip>
+													</Link>
+												</TableCell>
+											</StyledTableRow>
+										))}
+									</TableBody>
+								</Table>
+							</TableContainer>
 							<FamilyHistory
 								onClose={handleEditClose}
 								open={openEdit}

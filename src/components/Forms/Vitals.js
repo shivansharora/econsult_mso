@@ -45,11 +45,17 @@ class Vitals extends Component {
       respiration: '',
       temp_loc: '',
       oxygen_sat: '',
-      bmi:'',
-      bmi_status:'',
+      bmi: '',
+      bmi_status: '',
       other_notes: ''
     }
   }
+
+  onChange = e => {
+    this.setState({
+      [e.target.name]: e.target.value
+    });
+  };
 
   //////////////////////////////// For height//////////////////////////////////////////////////////////
   handleCmChange = evt => {
@@ -203,12 +209,6 @@ class Vitals extends Component {
   }
 
 
-  computeBmi=(weight_in_kg)=> {
-    // console.log(weight_in_kg);
-    // let bmiValue =  (this.state.weight_in_kg / this.state.height_in_cm / this.state.height_in_cm)*10000
-    // this.setState({ bmi : bmiValue });
-}
-
   ///////////////////// end ////////////////////////////////////////////
 
   format = (n) => {
@@ -216,46 +216,60 @@ class Vitals extends Component {
     if (x === '0') x = ''
     return x
   }
+  onFormSubmit = e => {
+    e.preventDefault();
+    const { weight_in_kg,
+      weight_in_lbs,
+      height_in_cm,
+      height_in_in,
+      head_circum_in_cm,
+      head_circum_in_in,
+      waist_circum_in_cm,
+      waist_circum_in_in,
+      temperature_in_f,
+      temperature_in_c,
+      bp_systolic,
+      bp_diastolic,
+      pulse,
+      respiration,
+      temp_loc,
+      oxygen_sat,
+      bmi,
+      bmi_status,
+      other_notes } = this.state;
 
-  // const handleSubmit = (event) => {
-  //     event.preventDefault();
-  //     submit();
-  //     const formData = {
-  //         weight_in_kg: values.weight_in_kg,
-  //         weight_in_lbs: values.weight_in_lbs,
-  //         height_in_cm: values.height_in_cm,
-  //         height_in_in: values.height_in_in,
-  //         bp_systolic: values.bp_systolic,
-  //         bp_diastolic: values.bp_diastolic,
-  //         pulse: values.pulse,
-  //         respiration: values.respiration,
-  //         temperature_in_f: values.temperature_in_f,
-  //         temperature_in_c: values.temperature_in_c,
-  //         temp_loc: values.temp_loc,
-  //         oxygen_sat: values.oxygen_sat,
-  //         head_circum_in_cm: values.head_circum_in_cm,
-  //         head_circum_in_in: values.head_circum_in_in,
-  //         waist_circum_in_cm: values.waist_circum_in_cm,
-  //         waist_circum_in_in: values.waist_circum_in_in,
-  //         other_notes:values.other_notes
+    const formData = {
+      weight_in_kg,
+      weight_in_lbs,
+      height_in_cm,
+      height_in_in,
+      head_circum_in_cm,
+      head_circum_in_in,
+      waist_circum_in_cm,
+      waist_circum_in_in,
+      temperature_in_f,
+      temperature_in_c,
+      bp_systolic,
+      bp_diastolic,
+      pulse,
+      respiration,
+      temp_loc,
+      oxygen_sat,
+      bmi,
+      bmi_status,
+      other_notes
+
+    }
+    console.log(formData)
+  };
 
 
-  //     };
 
-  //     console.log(JSON.stringify(formData));
-
-  // };
-
-  submit = () => {
-    console.log("Submitted Successfully");
-    alert();
-  }
 
   // if (!open) {
   //     return null;
   // }
   render() {
-    //  console.log(this.state.weight_in_kg);
     const kilos = (
       <TextField
         required
@@ -385,8 +399,7 @@ class Vitals extends Component {
         name="bmi"
         label="kg/m^2"
         fullWidth
-        // onChange={this.computeBmi}
-        // value={this.state.bmi}
+        onChange={this.onChange}
       />
     )
     const BmiStatus = (
@@ -397,8 +410,7 @@ class Vitals extends Component {
         name="bmi_status"
         label="type"
         fullWidth
-        // onChange={this.computeBmi}
-        // value={this.format(this.state.bmi_status)}
+        onChange={this.onChange}
       />
     )
     const root = {
@@ -419,16 +431,16 @@ class Vitals extends Component {
         open={this.props.open}
       >
         <Card style={root}>
-        <div style={{ textAlign:"center",fontSize:20 }}>
-                <label>Vitals</label>
-                </div>
+          <div style={{ textAlign: "center", fontSize: 20 }}>
+            <label>Vitals</label>
+          </div>
           <CardBody>
-            <form >
+            <form onSubmit={this.onFormSubmit} >
               <Grid container spacing={1}>
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '23px' }} variant="body2">
                     Weight :
-                                </Typography>
+                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={5} md={5} >
                   {kilos}
@@ -439,7 +451,7 @@ class Vitals extends Component {
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '23px' }} variant="body2">
                     Height :
-                                </Typography>
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={5} md={5} >
                   {HeightCm}
@@ -453,29 +465,31 @@ class Vitals extends Component {
                                 </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4} md={4} >
-                  <CustomInput
+                  <TextField
                     required
                     id="bp_systolic"
                     name="bp_systolic"
                     label="mmHg"
-                  // value={values.bp_systolic}
-                  // changed={handleFieldChange}
+                    required
+                    // value={values.bp_systolic}
+                    onChange={this.onChange}
 
                   />
                 </Grid>
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '30px', marginLeft: '32px' }} variant="body2">
                     BP Diastolic :
-                                </Typography>
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4} md={4} >
-                  <CustomInput
+                  <TextField
                     required
                     id="bp_diastolic"
                     name="bp_diastolic"
                     label="mmHg"
-                  // value={values.bp_diastolic}
-                  // changed={handleFieldChange}
+                    required
+                    // value={values.bp_diastolic}
+                    onChange={this.onChange}
 
                   />
                 </Grid>
@@ -485,29 +499,31 @@ class Vitals extends Component {
                 </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4} md={4} >
-                  <CustomInput
+                  <TextField
                     required
                     id="pulse"
                     name="pulse"
                     label="per min"
-                  // value={values.pulse}
-                  // changed={handleFieldChange}
+                    required
+                    // value={values.pulse}
+                    onChange={this.onChange}
 
                   />
                 </Grid>
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '30px', marginLeft: '32px' }} variant="body2">
                     Respiration :
-                                </Typography>
+                  </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4} md={4} >
-                  <CustomInput
+                  <TextField
                     required
                     id="respiration"
                     name="respiration"
                     label="per min"
-                  // value={values.respiration}
-                  // changed={handleFieldChange}
+                    required
+                    // value={values.respiration}
+                    onChange={this.onChange}
 
                   />
                 </Grid>
@@ -530,11 +546,13 @@ class Vitals extends Component {
                 <Grid item xs={12} sm={4} md={4} >
                   <TextField style={{ minWidth: 220 }}
                     id="temp_loc"
+                    required
                     select
                     name="temp_loc"
                     label="Select"
-                  // value={values.temp_loc}
-                  // onChange={handleFieldChange}
+                    defaultValue=""
+                    // value={values.temp_loc}
+                    onChange={this.onChange}
 
                   >
                     <MenuItem value={1}>Unassigned</MenuItem>
@@ -548,16 +566,16 @@ class Vitals extends Component {
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '12px', marginLeft: '26px' }} variant="body2">
                     Oxygen Saturation :
-                                </Typography>
+                    </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4} md={4} >
-                  <CustomInput
+                  <TextField
                     required
                     id="oxygen_sat"
                     name="oxygen_sat"
                     label="%"
-                  // value={values.oxygen_sat}
-                  // changed={handleFieldChange}
+                    // value={values.oxygen_sat}
+                    onChange={this.onChange}
 
                   />
                 </Grid>
@@ -593,11 +611,11 @@ class Vitals extends Component {
                 </Grid>
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '30px', marginLeft: '32px' }} variant="body2">
-                     BMI Status:
+                    BMI Status:
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={4} md={4} >
-                 {BmiStatus}
+                  {BmiStatus}
                 </Grid>
                 <Grid item xs={12} sm={2} md={2} >
                   <Typography style={{ fontWeight: 500, marginTop: '23px' }} variant="body2">
@@ -605,14 +623,14 @@ class Vitals extends Component {
                    </Typography>
                 </Grid>
                 <Grid item xs={12} sm={10} md={10} style={{ marginTop: '8px' }} >
-                  <CustomInput
+                  <TextField
                     required
-
                     id="other_notes"
                     name="other_notes"
                     label=""
-                  // value={values.other_notes}
-                  // changed={handleFieldChange}
+                    fullWidth
+                    // value={values.other_notes}
+                    onChange={this.onChange}
 
                   />
                 </Grid>

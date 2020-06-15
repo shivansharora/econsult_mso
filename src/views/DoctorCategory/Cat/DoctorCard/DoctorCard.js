@@ -27,20 +27,20 @@ const DoctorCard = (props) => {
         </a>
       </CardAvatar>
       <CardBody profile>
-        <h6 className={classes.cardCategory}> {doctor.name}
+        <h6 className={classes.cardCategory}>Dr. {doctor.name}({doctor.designation})
         </h6>
         <div className={classes.stats}>
-          <WorkIcon />{doctor.experience}
+          <WorkIcon />{doctor.work_experience}
         </div> <br />
         <div className={classes.stats}>
-          <AccountBalanceWalletIcon /> {doctor.number}
+          <AccountBalanceWalletIcon /> {doctor.fee}
         </div><br />
 
         <div className={classes.stats}>
-          <ScheduleIcon />Consultation Time :{doctor.consult_time}
+          <ScheduleIcon />Consultation Time :11 A.M
         </div><br />
         <div className={classes.stats}>
-          <StarIcon style={{ backgroundColor: '#FF9529' }} />{doctor.rating}
+          <StarIcon style={{ backgroundColor: '#FF9529' }} />4.5/5
         </div><br />
       </CardBody>
       <CardFooter>
@@ -52,7 +52,7 @@ const DoctorCard = (props) => {
         <Custombuttons
           style={{ padding: '8px 17px', fontSize: '14px' }}
           component={RouterLink}
-          to="/doctor_category/1"
+          to={`/doctor_category/${doctor.id}`}
         >View Bio</Custombuttons>
       </CardFooter>
     </Card>

@@ -8,8 +8,8 @@ const gender = [
 		label: 'Female',
 	},
 	{
-		value: 'Others',
-		label: 'Others',
+		value: 'Transgender',
+		label: 'Transgender',
 	},
 ];
 

@@ -1,4 +1,4 @@
-import React , {useState} from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -17,7 +17,8 @@ import {
   colors
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import ChangeStatusForm from '../ChangeAppointmentStatus/ChangeAppointmentStatus'
+import BookIcon from '@material-ui/icons/Book';
+
 import getInitials from '../../../utils/getInitials';
 
 const useStyles = makeStyles(theme => ({
@@ -76,15 +77,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const AppointmentCard = props => {
+const ProjectCard = props => {
   const { project, className, ...rest } = props;
-// console.log()
+
   const classes = useStyles();
+  
 
   const statusColors = {
-    'Patient Not Present': colors.orange[600],
-    Canceled: colors.red[600],
-    Confirmed: colors.green[600]
+    'In progress': colors.orange[600],
+    Canceled: colors.grey[600],
+    Completed: colors.green[600]
   };
 
   return (
@@ -97,12 +99,12 @@ const AppointmentCard = props => {
           <Avatar
             alt="Author"
             className={classes.avatar}
-            src={project.patient.profile_photo}
+            src={project.profile_photo}
           >
           </Avatar>
           <div>
             <Typography style={{ fontWeight: 500 }} variant="body2">
-              Patient Name
+              Name
             </Typography>
             <Link
               color="textPrimary"
@@ -112,106 +114,74 @@ const AppointmentCard = props => {
               variant="h5"
               style={{ fontSize: 'unset', fontWeight: 300 }}
             >
-              {project.patient.name}
+              {project.name}
             </Link>
           </div>
         </div>
+        {project.age ?
         <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500 }} variant="body2">Doctor</Typography>
+          <Typography style={{ fontWeight: 500 }} variant="body2">Age</Typography>
           <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
-            {project.doctor.name}
+            {project.age}
           </Typography>
 
         </div>
-        <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500 }} variant="body2">Category</Typography>
-          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">{project.doctor_category.category_title}</Typography>
+        : <div className={classes.stats}>
+        <Typography style={{ fontWeight: 500 }} variant="body2">DOB</Typography>
+        <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
+          {project.dob}
+        </Typography>
 
-        </div>
-       
-          <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500 }} variant="body2">Booking Status</Typography>
-          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
-            {project.booking_status}
-          </Typography>
-
-        </div>
+      </div>}
         <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500 }} variant="body2">Appointment Date</Typography>
-          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
-            {project.appointment_date}
-          </Typography>
+          <Typography style={{ fontWeight: 500 }} variant="body2">Number</Typography>
+          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">{project.mobile}</Typography>
 
         </div>
         <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500 }} variant="body2">Appointment Time</Typography>
+          <Typography style={{ fontWeight: 500 }} variant="body2">Gender</Typography>
+          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">{project.gender}</Typography>
+
+        </div>
+        <div className={classes.stats}>
+          <Typography style={{ fontWeight: 500 }} variant="body2">Registered Date</Typography>
           <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
-            {project.appointment_time}
+            {(project.created_at)}
           </Typography>
 
         </div>
-        {project.status.value === 'Confirmed'&&(
-       <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500 }} variant="body2">Status</Typography>
-          <Link
-            color="inherit"
-            style={{ color: statusColors[project.status.value] }}
-            variant="h6"
-            component={RouterLink}
-            to={`/change_appointment_status/${project.id}/${project.patient.id}`}
-          >
-          {project.status.value}
-          </Link>
-        </div>
-        )}
-         {project.status.value !== 'Confirmed'&&(
-       <div className={classes.stats}>
-          <Typography style={{ fontWeight: 500,marginLeft:20 }} variant="body2">Status</Typography>
-          <Typography style={{ fontSize: 'unset',color: 'red', fontWeight: 300 }} variant="h6">
-          {project.status.value}
+        <div className={classes.stats}>
+          <Typography style={{ fontWeight: 500 }} variant="body2">Last Visit Date</Typography>
+          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
+            {project.last_visit_date}
           </Typography>
+
         </div>
-        )}
         <div className={classes.actions}>
-          <Typography style={{ fontWeight: 500, marginLeft: 15 }} variant="body2">Action</Typography>
+          <Typography style={{ fontWeight: 500, marginLeft: 10 }} variant="body2">Action</Typography>
           <Link
             color="inherit"
             component={RouterLink}
-            to="/appointment_detail/1"
+            to={`/create_appointment/${project.id}`}
             variant="h6"
           >
-            <Tooltip title="View" aria-label="View">
+            <Tooltip title="Book Appointment" aria-label="Book Appointment">
               <Fab className={classes.fab}>
 
-                <VisibilityIcon />
-              </Fab>
-            </Tooltip>
-          </Link>
-          {project.status.value === 'Confirmed'&&(
-          <Link
-            color="inherit"
-            component={RouterLink}
-            to={`/edit_book_appointment/${project.id}`}
-            variant="h6"
-          >
-            <Tooltip title="Edit" aria-label="Edit">
-              <Fab className={classes.fab}>
-
-                <EditIcon
+                <BookIcon
                 />
               </Fab>
             </Tooltip>
           </Link>
-          )}
         </div>
       </CardContent>
     </Card>
   );
 };
 
-AppointmentCard.propTypes = {
+ProjectCard.propTypes = {
   className: PropTypes.string,
   project: PropTypes.object.isRequired
 };
 
-export default AppointmentCard;
+export default ProjectCard;

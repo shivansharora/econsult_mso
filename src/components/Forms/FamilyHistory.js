@@ -93,23 +93,14 @@ const FamilyHistory = props => {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={5} md={5} >
-                                <TextField style={{ minWidth: 238 }}
+                                <TextField
                                     id="father_disease"
-                                    select
                                     name="father_disease"
                                     label="Disease Name"
                                     value={values.father_disease || ''}
                                     onChange={handleChange}
-
-                                >
-
-                                    <MenuItem value={10}>TB</MenuItem>
-                                    <MenuItem value={20}>Diabetes</MenuItem>
-                                    <MenuItem value={30}>Thyroid</MenuItem>
-                                    <MenuItem value={10}>Hypertension</MenuItem>
-                                    <MenuItem value={10}>Hypotension</MenuItem>
-
-                                </TextField>
+                                    fullWidth
+                                />
                                 {errors.father_disease && (
                                     <p className={classes.danger}>{errors.father_disease}</p>
                                 )}
@@ -135,21 +126,14 @@ const FamilyHistory = props => {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={5} md={5} >
-                                <TextField style={{ minWidth: 238 }}
+                                <TextField
                                     id="mother_disease"
-                                    select
                                     name="mother_disease"
                                     label="Disease Name"
                                     value={values.mother_disease || ''}
                                     onChange={handleChange}
-
-                                >
-                                    <MenuItem value={10}>TB</MenuItem>
-                                    <MenuItem value={20}>Diabetes</MenuItem>
-                                    <MenuItem value={30}>Thyroid</MenuItem>
-                                    <MenuItem value={10}>Hypertension</MenuItem>
-                                    <MenuItem value={10}>Hypotension</MenuItem>
-                                </TextField>
+                                    fullWidth
+                                />
                                 {errors.mother_disease && (
                                     <p className={classes.danger}>{errors.mother_disease}</p>
                                 )}
@@ -175,26 +159,19 @@ const FamilyHistory = props => {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={5} md={5} >
-                                <TextField style={{ minWidth: 238 }}
+                            <TextField
                                     id="sibling_disease"
-                                    select
                                     name="sibling_disease"
                                     label="Disease Name"
                                     value={values.sibling_disease || ''}
                                     onChange={handleChange}
-
-                                >
-                                    <MenuItem value={10}>TB</MenuItem>
-                                    <MenuItem value={20}>Diabetes</MenuItem>
-                                    <MenuItem value={30}>Thyroid</MenuItem>
-                                    <MenuItem value={10}>Hypertension</MenuItem>
-                                    <MenuItem value={10}>Hypotension</MenuItem>
-
-                                </TextField>
+                                    fullWidth
+                                />
                                 {errors.sibling_disease && (
                                     <p className={classes.danger}>{errors.sibling_disease}</p>
                                 )}
                             </Grid>
+                           
                             <Grid item xs={12} sm={5} md={5} >
                                 <TextField
                                     id="sibling_desc"
@@ -216,22 +193,14 @@ const FamilyHistory = props => {
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} sm={5} md={5} >
-                                <TextField style={{ minWidth: 238 }}
+                            <TextField
                                     id="spouce_disease"
-                                    select
                                     name="spouce_disease"
                                     label="Disease Name"
                                     value={values.spouce_disease || ''}
                                     onChange={handleChange}
-
-                                >
-                                    <MenuItem value={10}>TB</MenuItem>
-                                    <MenuItem value={20}>Diabetes</MenuItem>
-                                    <MenuItem value={30}>Thyroid</MenuItem>
-                                    <MenuItem value={10}>Hypertension</MenuItem>
-                                    <MenuItem value={10}>Hypotension</MenuItem>
-
-                                </TextField>
+                                    fullWidth
+                                />
                                 {errors.spouce_disease && (
                                     <p className={classes.danger}>{errors.spouce_disease}</p>
                                 )}

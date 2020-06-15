@@ -1,11 +1,9 @@
 
-import React, { useState,useEffect } from "react";
-// @material-ui/core components
-import { makeStyles,withStyles } from "@material-ui/core/styles";
+
+import React, { useState, useEffect } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import Grid from '@material-ui/core/Grid';
 
-// core components
-// import Webcam from 'react-webcam';
 import Button from '../../components/CustomButtons/Button';
 import Card from '../../components/Card/Card';
 import CardHeader from '../../components/Card/CardHeader';
@@ -13,28 +11,29 @@ import CardIcon from '../../components/Card/CardIcon';
 import CardBody from '../../components/Card/CardBody';
 import CardFooter from '../../components/Card/CardFooter';
 import CardAvatar from '../../components/Card/CardAvatar';
-// import avatar from "../../assets/Patient image/Patient.png";
 import avatar from "../../assets/img/patient.png";
-import { green } from '@material-ui/core/colors';
-
+import axios from '../../utils/axios1';
+import axios1 from 'axios';
+import { useEffectOnce } from 'react-use';
 import { Link as RouterLink } from 'react-router-dom';
-// import Switch from '@material-ui/core/Switch';
+import { useForm, Controller } from "react-hook-form";
+
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import TextField from '@material-ui/core/TextField';
-// import { useFormFields } from '../../customHooks/useFormFields';
-import useForm from '../../customHooks/useForm';
-import validate from './Validation'
-import maritalStatus from './maritalStatus';
-import Gender from './gender';
 import MenuItem from '@material-ui/core/MenuItem';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import CustomInput from '../../components/CustomInput/CustomInput';
 import moment from 'moment';
 import {
-	FormControlLabel,
 	Checkbox,
-	colors
+	Select,
+	FormControl,
+	InputLabel,
+	FormHelperText,
 } from "@material-ui/core";
+import { async } from "q";
+import { object } from "prop-types";
 
 const styles = theme => ({
 	root: {
@@ -61,57 +60,202 @@ const styles = theme => ({
 	},
 	danger: {
 		color: 'brown'
+	},
+	input: {
+		display: 'block',
+		boxSizing: 'border-box',
+		width: '100%',
+		borderRadius: '4px',
+		border: '1px solid black',
+		padding: '10px 15px',
+		marginBottom: '2px',
+		fontSize: '14px'
 	}
 });
 
 const useStyles = makeStyles(styles);
 
 
-const GreenCheckbox = withStyles({
-	root: {
-		color: green[400],
-		'&$checked': {
-			color: green[600],
-		},
-	},
-	checked: {},
-})((props) => <Checkbox color="default" {...props} />);
-
 const EditPatient = (props) => {
+
+	const { handleSubmit, errors, control, watch, setValue } = useForm();
+
+	const [cities, setCities] = useState([]);
+	const [maritalStatus, setMaritalStatus] = useState([]);
+	const [genders, setGender] = useState([]);
+	const [patient, setPatient] = useState([])
+	const [states, setState] = useState([]);
+	const [isAge, setIsAge] = useState()
+	const [iscity, setIsCity] = useState()
+
+
 	const classes = useStyles();
-	const [dob, setSelectedDate] = React.useState(new Date(moment()));
 	const uploadedImage = React.useRef(null);
 	const imageUploader = React.useRef(null);
-	const [camIsOn, setState] = useState(false);
-	const {
-		values,
-		errors,
-		handleChange,
-		handleSubmit,
-	} = useForm(register, validate);
 
-	function register() {
-		const formData = {
-			name: values.name,
-			mobile: values.mobile,
-			email: values.email,
-			dob: dob,
-			age: values.age,
-			marital_status: values.marital_status,
-			gender: values.gender,
-			address: values.address,
-			city_id: values.city_id,
-			state_id: values.state_id,
-			pincode: values.pincode,
-			emergency_contact_no: values.emergency_contact_no,
-			alternate_contact_no: values.alternate_contact_no,
-			emergency_contact_person: values.emergency_contact_person,
-			emergency_contact_relationship: values.emergency_contact_relationship,
-			uploadedImage:uploadedImage
+	// const is_tentative_age = watch('is_tentative_age', false);
+
+
+
+	useEffect(() => {
+		let mounted = true;
+
+		const fetchStates = () => {
+			axios.get('/get_states').then(response => {
+				if (mounted) {
+					setState(response.data);
+					// console.log(response.data)
+				}
+
+			}).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+		};
+
+		const fetchMaritalStatus = () => {
+			axios.get('/get_marital_status').then(response => {
+				if (mounted) {
+					setMaritalStatus(response.data);
+					console.log(response.data)
+				}
+
+			}).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+		};
+
+		const fetchGender = () => {
+			axios.get('/get_genders ').then(response => {
+				if (mounted) {
+					setGender(response.data);
+					console.log(response.data)
+				}
+
+			}).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+		};
+
+		const fetchPatient = () => {
+			if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+				let token = "Bearer " + localStorage.getItem("jwt");
+				axios.get(`/patients/${props.match.params.id}`, { headers: { Authorization: token } }).then(response => {
+					if (mounted) {
+						setPatient(response.data);
+						// console.log(response.data)
+					}
+
+				}).catch(error => {
+					if (error.response.data != "") {
+						alert(error.response.data.error);
+					} else {
+						alert(error.response.statusText);
+					}
+				});
+			}
 		}
-		values.imageUploader=uploadedImage
-		console.log(values);
+
+
+		fetchStates();
+		fetchMaritalStatus();
+		fetchGender()
+		fetchPatient()
+		return () => {
+			mounted = false;
+		};
+	}, []);
+
+	const getCity = state_id => {
+		try {
+			axios.get(`/get_cities/${state_id}`).then(response => {
+				setCities(response.data);
+				// console.log(response.data);
+			});
+		} catch (error) { }
+	};
+
+	const getVal =(is_tentative_age)=>{
+		console.log(is_tentative_age)
+		setIsAge(is_tentative_age)
 	}
+
+	useEffect(() => {
+		if (patient.state !== undefined) {
+		  var obj = patient.state;
+		  var key = Object.keys(obj)[0];
+		  var value = obj[key];
+		  console.log("key = ", key);
+		  console.log("value = ", value);
+		  console.log(patient.state);
+		  setValue("state_id", value || "");
+		  getCity(value);
+		}
+		if (patient.city !== undefined) {
+		  var obj = patient.city;
+		  var key = Object.keys(obj)[0];
+		  var value = obj[key];
+		  console.log("key = ", key);
+		  console.log("value = ", value);
+		  setValue("city_id", value || "");
+		}
+		if (patient.marital_status !== undefined) {
+		  var obj = patient.marital_status;
+		  var key = Object.keys(obj)[0];
+		  var value = obj[key];
+		  console.log("key = ", key);
+		  console.log("value = ", value);
+		  console.log(patient.marital_status);
+		  setValue("marital_status", value || "");
+		}
+		if (patient.is_tentative_age !== undefined) {
+		  const isAge = patient.is_tentative_age;
+		  if (patient.is_tentative_age === 1) {
+			setValue("is_tentative_age", true);
+		  }
+		}
+		// if (patient.is_tentative_age !== undefined) {
+		//   if (patient.is_tentative_age === 1) {
+		// 	setIsAge(true);
+		//   } else {
+		// 	setIsAge(false);
+		//   }
+		// }
+		if (patient.dob !== undefined) {
+		  // setIsAge(patient.is_tentative_age)
+		  console.log(patient.dob)
+		  
+		}
+		setValue("name", patient.name || "");
+		setValue("mobile", patient.mobile || "");
+		setValue("email", patient.email || "");
+		setValue("age", patient.age || "");
+		// setValue("dob",patient.dob || '' )
+		setValue("gender", patient.gender || "");
+		setValue("address", patient.address || "");
+		setValue("pincode", patient.pincode || "");
+		setValue("emergency_contact_no", patient.emergency_contact_no || "");
+		setValue("alternate_contact_no", patient.alternate_contact_no || "");
+		setValue(
+		  "emergency_contact_person",
+		  patient.emergency_contact_person || ""
+		);
+		setValue(
+		  "emergency_contact_relationship",
+		  patient.emergency_contact_relationship || ""
+		);
+	  }, [patient]);
 
 	const handleImageUpload = e => {
 		const [file] = e.target.files;
@@ -125,339 +269,577 @@ const EditPatient = (props) => {
 			reader.readAsDataURL(file);
 		}
 	};
-	 
-	const age=()=>{
-		return(
-			<Grid item xs={12} sm={3} md={3} >
-			<CustomInput
-				required
-				id="age"
-				name="age"
-				label="Age"
-				value={values.age || ''}
-				changed={handleChange}
-				fullWidth
 
-			/>
-			{/* {errors.age && (
-				<p className={classes.danger}>{errors.age}</p>
-			)} */}
-		</Grid>
+	const blockSpecialChar = (event) => {
+		if (event.which == 13 || event.keyCode == 13) {
+			return false;
+		} else {
+			var regex = new RegExp("^[.a-zA-Z0-9\b _ _%]+$");
+			var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+			if (!regex.test(key)) {
+				event.preventDefault();
+				return false;
+			}
+		}
+		return true;
+	}
+
+	const Alpha = (event) => {
+		var keynum
+		if (window.event) {
+			keynum = event.keyCode;
+		} else if (event.which) {
+			keynum = event.which;
+		} else {
+			keynum = 0;
+		}
+
+		if (keynum === 8 || keynum === 0 || keynum === 9) {
+			return;
+		}
+		if (keynum < 46 || keynum > 57 || keynum === 47) {
+			event.preventDefault();
+		}
+	}
+
+
+	const Dob = () => {
+		return (
+			<React.Fragment>
+				<Grid item xs={12} sm={3} md={3} >
+					<Controller
+						as={<ReactDatePicker />}
+						error={Boolean(errors.dob)}
+						control={control}
+						valueName="selected"
+						onChange={([selected]) => selected}
+						name="dob"
+						rules={{ required: "DOB is required" }}
+						// filterDate={(date) => {
+						// 	return moment() > date;
+						// }}
+						isClearable
+						customInput={<CustomInput />}
+						peekNextMonth
+						showMonthDropdown
+						showYearDropdown
+						dateFormat="yyyy-MM-dd"
+						dropdownMode="select"
+						popperPlacement="bottom-start"
+					/>
+					{errors.dob && <div style={{ color: 'red' }}>DOB is required</div>}
+				</Grid>
+			</React.Fragment>
 		)
 	}
 
+	const CustomInput = React.forwardRef((props, ref) => {
+		return (
+			<input
+				onClick={props.onClick}
+				value={props.value}
+				className={classes.input}
+				type="text"
+				placeholder="Select DOB"
+				readOnly={true}
+			/>
+		)
+	})
+
+	const onSubmit = data => {
+		if (uploadedImage.current.currentSrc == '') {
+			data.profile_photo = ''
+		}
+		else {
+			data.profile_photo = uploadedImage.current.currentSrc
+		}
+
+		console.log(data.is_tentative_age)
+		if (data.is_tentative_age === true) {
+			data.is_tentative_age = 1
+		} else {
+			data.is_tentative_age = 0
+		}
+
+		const patient = {
+
+			name: data.name,
+			mobile: data.mobile,
+			alternate_contact_no: data.alternate_contact_no,
+			email: data.email,
+			is_tentative_age: data.is_tentative_age,
+			age: data.age,
+			dob: data.dob,
+			marital_status: data.marital_status,
+			gender: data.gender,
+			address: data.address,
+			city_id: data.city_id,
+			state_id: data.state_id,
+			pincode: data.pincode,
+			emergency_contact_no: data.emergency_contact_no,
+			emergency_contact_person: data.emergency_contact_person,
+			emergency_contact_relationship: data.emergency_contact_relationship,
+			profile_photo: data.profile_photo
+
+		}
+		// console.log(props.match.params.id)
+		
+		if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+			let token = "Bearer " + localStorage.getItem("jwt");
+			axios.put(`/patients/${props.match.params.id}`, { patient: patient }, { headers: { Authorization: token } }).then(response => {
+				console.log(response);
+				alert(response.data.message);
+				// props.history.goBack()
+			}).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+		}
+		console.log(patient)
+	};
+
 	return (
 		<div className={classes.root}>
-			<form onSubmit={handleSubmit}>
-			<Grid container spacing={2}>
-			
-				<Grid item xs={12} sm={9} md={9} >
-					<Card style={{ marginTop: '23px' }}>
-						<CardHeader style={{ width: '147px', padding: '14px' }} color="success" >
-							<CardIcon color="success">
-								<PersonAddIcon />
-							</CardIcon>
-							<h4 className={classes.cardTitleWhite}>Edit Patient</h4>
-						</CardHeader>
-						<CardBody>
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<Grid container spacing={2}>
+
+					<Grid item xs={12} sm={9} md={9} >
+						<Card style={{ marginTop: '23px' }}>
+							<CardHeader style={{ width: '147px', padding: '14px' }} color="success" >
+								<CardIcon color="success">
+									<PersonAddIcon />
+								</CardIcon>
+								<h4 className={classes.cardTitleWhite}>Edit Patient</h4>
+							</CardHeader>
+							<CardBody>
 								<Grid container spacing={2}>
 									<Grid item xs={12} sm={12} md={12} >
-										<CustomInput
-											required
+										<Controller
+											as={<TextField />}
+											error={Boolean(errors.name)}
+											name="name"
+											rules={{ required: "Patient Name is required" }}
+											control={control}
+											defaultValue=""
+											label="Full Name"
+											type="text"
+											helperText={errors.name && errors.name.message}
+											fullWidth
+											onKeyPress={blockSpecialChar}
 											inputProps={{
 												autoFocus: true
 											}}
-											id="name"
-											name="name"
-											label="Full Name"
-											value={values.name || ''}
-											changed={handleChange}
-
 										/>
-										{errors.name && (
-											<p className={classes.danger}>{errors.name}</p>
-										)}
-
 									</Grid>
 									<Grid item xs={12} sm={6} md={6} >
-										<CustomInput
-											required
-											id="mobile"
+										<Controller
+											as={<TextField />}
+											error={Boolean(errors.mobile)}
 											name="mobile"
+											rules={{
+												// required: "Mobile Number is required",
+												pattern: {
+													value: /^[0-9]*$/,
+													message: "Only Numbers are allowed"
+												},
+												minLength: 10
+											}}
+											control={control}
+											defaultValue=""
 											label="Mobile"
-											value={values.mobile || ''}
-											changed={handleChange}
-
+											type="text"
+											helperText={errors.mobile && errors.mobile.message}
+											fullWidth
+											onKeyDown={Alpha}
+											inputProps={{
+												maxLength: 10,
+											}}
 										/>
-										{errors.mobile && (
-											<p className={classes.danger}>{errors.mobile}</p>
-										)}
+
+										{errors.mobile && errors.mobile.type === "minLength" &&
+											<span style={{ color: 'red' }}>Number length should be 10</span>}
 									</Grid>
+
 									<Grid item xs={12} sm={6} md={6} >
-										<CustomInput
-											required
-											id="email"
+										<Controller
+											as={<TextField />}
+											error={Boolean(errors.email)}
 											name="email"
+											rules={{
+												// required: "Email is required",
+												pattern: {
+													value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+													message: "Invalid email address"
+												}
+											}}
+											control={control}
+											defaultValue=""
 											label="Email"
-											value={values.email || ''}
-											changed={handleChange}
-
+											type="email"
+											helperText={errors.email && errors.email.message}
+											fullWidth
 										/>
-										{errors.email && (
-											<p className={classes.danger}>{errors.email}</p>
-										)}
 									</Grid>
-									
-								
+
 									<Grid item xs={12} sm={3} md={3} >
-										<FormControlLabel
-											control={<GreenCheckbox
-												checked={values.tentative_age || false}
-												style={{ marginLeft: '-6px' }}
-												color="primary"
-												name="tentative_age"
-												onChange={handleChange}
-											/>}
-											label="Tentative Age"
+										<label>Tentative Age</label>
+										<Controller control={control} as={<Checkbox />}
+											name="is_tentative_age"
+											defaultValue={false}
+											onChange={([e]) => {
+												getVal(e.target.checked);
+												return e;
+											}}
+										// checked={patient.tentative_age || false }
+
 										/>
 									</Grid>
-									{values.tentative_age === true ?
-											age() : 	<Grid item xs={12} sm={3} md={3} >
-											<TextField
-												id="dob"
-												label="DOB"
-												type="date"
-												name="dob"
-												value={values.dob || ''} onChange={handleChange}
-												className={classes.textField}
-												InputLabelProps={{
-													shrink: true
+									{/* {console.log(isAge)} */}
+									{isAge === false || patient.is_tentative_age === 0 && (
+										Dob()
+									  )}
+									{isAge === true ||  patient.is_tentative_age === 1 && (
+										<Grid item xs={12} sm={3} md={3} >
+											<Controller
+												as={<TextField />}
+												error={Boolean(errors.age)}
+												name="age"
+												rules={{
+													required: "Age is required",
+													pattern: {
+														value: /^[0-9]*$/,
+														message: "Only Numbers are allowed"
+													}
 												}}
+												control={control}
+												defaultValue=""
+												label="Age"
+												type="text"
+												helperText={errors.age && errors.age.message}
+												fullWidth
+												onKeyDown={Alpha}
 											/>
-	
-											{/* {errors.dob && (
-												<p className={classes.danger}>{errors.dob}</p>
-											)} */}
-										</Grid>}
-									<Grid item xs={12} sm={3} md={3}>
-										<TextField className={classes.formControl}
-											id="marital_status"
-											name="marital_status"
-											select
-											label="Marital Status"
-											value={values.marital_status || ''}
-											onChange={handleChange}
-										>
-											{maritalStatus.map(option => (
-												<MenuItem key={option.value} value={option.value}>
-													{option.label}
-												</MenuItem>
-											))}
-										</TextField>
-										{errors.marital_status && (
-											<p className={classes.danger}>{errors.marital_status}</p>
-										)}
-									</Grid>
-									<Grid item xs={12} sm={3} md={3}>
-										<TextField className={classes.formControl}
-											id="gender"
-											select
-											label="Gender"
-											name="gender"
-											value={values.gender || ''}
-											onChange={handleChange}
-										>
-											{Gender.map(option => (
-												<MenuItem key={option.value} value={option.value}>
-													{option.label}
-												</MenuItem>
-											))}
+										</Grid>
 
-										</TextField>
-										{errors.gender && (
-											<p className={classes.danger}>{errors.gender}</p>
-										)}
+									 )} 
+									<Grid item xs={12} sm={3} md={3}>
+										<FormControl
+											style={{ minWidth: 170 }}
+											error={Boolean(errors.marital_status)}
+										>
+											<InputLabel id="demo-simple-select-label">
+												Marital Status
+									        </InputLabel>
+											<Controller
+												as={
+													<Select>
+														{maritalStatus.map(option => (
+															<MenuItem key={option.key} value={option.key}>
+																{option.value}
+															</MenuItem>
+														))}
+													</Select>
+												}
+												name="marital_status"
+												rules={{ required: "Marital Status is required" }}
+												control={control}
+												defaultValue=""
+											/>
+											<FormHelperText>
+												{errors.marital_status && errors.marital_status.message}
+											</FormHelperText>
+										</FormControl>
 									</Grid>
-									
+									<Grid item xs={12} sm={3} md={3}>
+										<FormControl
+											style={{ minWidth: 170 }}
+											error={Boolean(errors.gender)}
+										>
+											<InputLabel id="demo-simple-select-label">
+												Gender
+									        </InputLabel>
+
+											<Controller
+												as={
+													<Select>
+														{genders.map(option => (
+															<MenuItem key={option.key} value={option.key}>
+																{option.value}
+															</MenuItem>
+														))}
+													</Select>
+												}
+												name="gender"
+												rules={{ required: "Gender is required" }}
+												control={control}
+												defaultValue=""
+											/>
+											<FormHelperText>
+												{errors.gender && errors.gender.message}
+											</FormHelperText>
+										</FormControl>
+									</Grid>
 									<Grid item xs={12} sm={12} md={12} >
-										<CustomInput
-											required
-											id="address"
+										<Controller
+											as={<TextField />}
+											// error={Boolean(errors.address)}
 											name="address"
+											// rules={{ required: "Address is required" }}
+											control={control}
+											defaultValue=""
 											label="Address"
-											autoComplete="address"
-											value={values.address || ''}
-											changed={handleChange}
+											type="text"
+											// helperText={errors.address && errors.address.message}
+											fullWidth
+
 										/>
-										{errors.address && (
-											<p className={classes.danger}>{errors.address}</p>
-										)}
 									</Grid>
-									<Grid item xs={12} sm={4} md={4} >
-										<TextField style={{ minWidth: 200 }}
-											id="state_id "
-											select
-											name="state_id"
-											label="State"
-											value={values.state_id || ''}
-											onChange={handleChange}
 
-										>
-											<MenuItem value={10}>Delhi</MenuItem>
-											<MenuItem value={20}>Lucknow</MenuItem>
-											<MenuItem value={30}>Others</MenuItem>
-											))}
-										</TextField>
-										{errors.state_id && (
-											<p className={classes.danger}>{errors.state_id}</p>
-										)}
-									</Grid>
 									<Grid item xs={12} sm={4} md={4} >
-										<TextField style={{ minWidth: 200 }}
-											id="city_id"
-											select
-											name="city_id"
-											label="City"
-											value={values.city_id || ''}
-											onChange={handleChange}
+										<FormControl
+											style={{ minWidth: 170 }}
+										// error={Boolean(errors.state_id)}
+										>
+											<InputLabel id="demo-simple-select-label">
+												State
+									        </InputLabel>
 
-										>
-											<MenuItem value={10}>Basti</MenuItem>
-											<MenuItem value={20}>Barabanki</MenuItem>
-											<MenuItem value={30}>Others</MenuItem>
-											))}
-										</TextField>
-										{errors.city_id && (
-											<p className={classes.danger}>{errors.city_id}</p>
-										)}
+											<Controller
+												as={
+													<Select>
+														{states.map(option => (
+															<MenuItem key={option.id} value={option.id}>
+																{option.state_name}
+															</MenuItem>
+														))}
+													</Select>
+												}
+												name="state_id"
+												// rules={{ required: "State is required" }}
+												control={control}
+												onChange={([e]) => {
+													getCity(e.target.value);
+													return e;
+												}}
+												defaultValue=""
+											/>
+											<FormHelperText>
+												{/* {errors.state_id && errors.state_id.message} */}
+											</FormHelperText>
+										</FormControl>
 									</Grid>
-									
+									<Grid item xs={12} sm={4} md={4}>
+										<FormControl
+											style={{ minWidth: 170 }}
+											error={Boolean(errors.city_id)}
+										>
+											<InputLabel id="demo-simple-select-label">
+												City
+										</InputLabel>
+											<Controller
+												as={
+													<Select >
+														{cities.map(option => (
+															<MenuItem key={option.id} value={option.id}>
+																{option.city_name}
+															</MenuItem>
+														))}
+													</Select>
+												}
+												name="city_id"
+												// rules={{ required: "City is required" }}
+												control={control}
+											
+												defaultValue=""
+											/>
+											<FormHelperText>
+												{/* {errors.city_id && errors.city_id.message} */}
+											</FormHelperText>
+										</FormControl>
+									</Grid>
+
+
 									<Grid item xs={12} sm={4} md={4} >
-										<CustomInput
-											required
-											id="pincode"
+										<Controller
+											as={<TextField />}
+											error={Boolean(errors.pincode)}
 											name="pincode"
+											rules={{
+												// required: "Pincode is required",
+												pattern: {
+													value: /^[0-9]*$/,
+													message: "Only Numbers are allowed"
+												},
+												minLength: 6
+											}}
+											control={control}
+											defaultValue=""
 											label="Pincode"
-											value={values.pincode || ''}
-											changed={handleChange}
+											type="text"
+											helperText={errors.pincode && errors.pincode.message}
+											fullWidth
+											onKeyDown={Alpha}
+											inputProps={{
+												maxLength: 6,
+											}}
 										/>
-										{errors.pincode && (
-											<p className={classes.danger}>{errors.pincode}</p>
-										)}
+
+										{errors.pincode && errors.pincode.type === "minLength" &&
+											<span style={{ color: 'red' }}>Pincode length should be 6</span>}
 									</Grid>
 									<Grid item xs={12} sm={6} md={6} >
-										<CustomInput
-											required
-											id="emergency_contact_no"
+										<Controller
+											as={<TextField />}
+											error={Boolean(errors.emergency_contact_no)}
 											name="emergency_contact_no"
+											rules={{
+												// required: "Emergency Contact is required",
+												pattern: {
+													value: /^[0-9]*$/,
+													message: "Only Numbers are allowed"
+												},
+												minLength: 10
+											}}
+											control={control}
+											defaultValue=""
 											label="Emergency Contact"
-											value={values.emergency_contact_no || ''}
-											changed={handleChange}
+											type="text"
+											helperText={errors.emergency_contact_no && errors.emergency_contact_no.message}
+											fullWidth
+											onKeyDown={Alpha}
+											inputProps={{
+												maxLength: 10,
+											}}
 										/>
-										{errors.emergency_contact_no && (
-											<p className={classes.danger}>{errors.emergency_contact_no}</p>
-										)}
+
+										{errors.emergency_contact_no && errors.emergency_contact_no.type === "minLength" &&
+											<span style={{ color: 'red' }}>Number length should be 10</span>}
 									</Grid>
 									<Grid item xs={12} sm={6} md={6} >
-										<CustomInput
-											required
-											id="alternate_contact_no"
+										<Controller
+											as={<TextField />}
+											error={Boolean(errors.alternate_contact_no)}
 											name="alternate_contact_no"
+											rules={{
+												// required: "Alternate Contact is required",
+												pattern: {
+													value: /^[0-9]*$/,
+													message: "Only Numbers are allowed"
+												},
+												minLength: 10
+											}}
+											control={control}
+											defaultValue=""
 											label="Alternate Number"
-											value={values.alternate_contact_no || ''}
-											changed={handleChange}
+											type="text"
+											helperText={errors.alternate_contact_no && errors.alternate_contact_no.message}
+											fullWidth
+											onKeyDown={Alpha}
+											inputProps={{
+												maxLength: 10,
+											}}
 										/>
-										{errors.alternate_contact_no && (
-											<p className={classes.danger}>{errors.alternate_contact_no}</p>
-										)}
+
+										{errors.alternate_contact_no && errors.alternate_contact_no.type === "minLength" &&
+											<span style={{ color: 'red' }}>Number length should be 10</span>}
 									</Grid>
 									<Grid item xs={12} sm={6} md={6} >
-										<CustomInput
-											required
-											id="emergency_contact_person"
+										<Controller
+											as={<TextField />}
+											// error={Boolean(errors.emergency_contact_person)}
 											name="emergency_contact_person"
+											// rules={{ required: "Emergency Contact Person is required" }}
+											control={control}
+											defaultValue=""
 											label="Emergency Contact Person"
-											value={values.emergency_contact_person || ''}
-											changed={handleChange}
+											type="text"
+											// helperText={errors.emergency_contact_person && errors.emergency_contact_person.message}
+											fullWidth
+
 										/>
-										{errors.emergency_contact_person && (
-											<p className={classes.danger}>{errors.emergency_contact_person}</p>
-										)}
 									</Grid>
 									<Grid item xs={12} sm={6} md={6} >
-										<CustomInput
-											required
-											id="emergency_contact_relationship"
+										<Controller
+											as={<TextField />}
+											// error={Boolean(errors.emergency_contact_relationship)}
 											name="emergency_contact_relationship"
+											// rules={{ required: "Emergency Contact Relationship is required" }}
+											control={control}
+											defaultValue=""
 											label="Emergency Contact Relationship"
-											value={values.emergency_contact_relationship || ''}
-											changed={handleChange}
+											type="text"
+											// helperText={errors.emergency_contact_relationship && errors.emergency_contact_relationship.message}
+											fullWidth
+
 										/>
-										{errors.emergency_contact_relationship && (
-											<p className={classes.danger}>{errors.emergency_contact_relationship}</p>
-										)}
 									</Grid>
 
 								</Grid>
 								<CardFooter style={{ float: 'right' }}>
-									<Button type="submit"  >Register</Button>
+									<Button type="submit"  >Save</Button>
 									<Button
 										component={RouterLink}
 										to="/patient_list"
 									>
 										Cancel</Button>
 								</CardFooter>
-						</CardBody>
-					</Card>
+							</CardBody>
+						</Card>
 
-				</Grid>
-				<Grid item xs={12} sm={3} md={3}>
-					<Card style={{ marginTop: '45px', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 2px 8px, rgba(0, 0, 0, 0.22) 0px 10px 12px' }} className={classes.card}>
-						<CardAvatar profile>
-						<input
-								type="file"
-								accept="image/*"
-								onChange={handleImageUpload}
-								ref={imageUploader}
-								style={{
-									display: "none"
-								}}
-							/>
-							<div
-								style={{
-									height: "123px",
-									width: "147px",
-								}}
-								onClick={() => imageUploader.current.click()}
-							>
-								<img
-									ref={uploadedImage}
-									src={avatar}
-									alt="Select"
+					</Grid>
+					<Grid item xs={12} sm={3} md={3}>
+						<Card style={{ marginTop: '45px', boxShadow: 'rgba(0, 0, 0, 0.3) 0px 2px 8px, rgba(0, 0, 0, 0.22) 0px 10px 12px' }} className={classes.card}>
+							<CardAvatar profile>
+								<input
+									type="file"
+									accept="image/*"
+									onChange={handleImageUpload}
+									ref={imageUploader}
+									// value={patient.profile_photo}
 									style={{
-										width: "89%",
-										height: "100%",
-										position: "acsolute",
-										cursor: 'pointer'
+										display: "none"
 									}}
 								/>
-							</div>
-						</CardAvatar>
-						<CardBody >
+								<div
+									style={{
+										height: "132px",
+										width: "147px",
+										backgroundColor: '#489a9c'
+									}}
+									onClick={() => imageUploader.current.click()}
+								>
+									<img
+										ref={uploadedImage}
+										// value={patient.profile_photo}
+										src={patient.profile_photo}
+										// alt="Select"
+										style={{
+											width: "100%",
+											height: "100%",
+											position: "acsolute",
+											cursor: 'pointer'
+										}}
+									/>
+								</div>
+							</CardAvatar>
+							<CardBody >
 
-							<Grid container spacing={0}>
-								<Grid item xs={12} sm={12} md={12} >
-									{/* <Webcam /> */}
-									<Button style={{ marginLeft: 45 }}
-										component={RouterLink}
-										to="create_patient/webcam"
-									>Upload Image</Button>
+								<Grid container spacing={0}>
+									<Grid item xs={12} sm={12} md={12} >
+										{/* <Webcam /> */}
+										<Button style={{ marginLeft: 45 }}
+											component={RouterLink}
+											to="create_patient/webcam"
+										>Upload Image</Button>
+									</Grid>
 								</Grid>
-							</Grid>
-						</CardBody>
-					</Card>
+							</CardBody>
+						</Card>
+					</Grid>
 				</Grid>
-			</Grid>
 			</form>
 
 		</div>

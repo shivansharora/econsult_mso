@@ -19,9 +19,9 @@ export default function validate(values) {
     errors.onset = 'Occurrence is required';
   }
   /////////////////////////// aggravating_factor //////////////////////////////////////
-  if (!values.aggravating_factor) {
-    errors.aggravating_factor = 'Aggravating Factor is required';
-  }
+  // if (!values.aggravating_factor) {
+  //   errors.aggravating_factor = 'Aggravating Factor is required';
+  // }
   /////////////////////////// current_status //////////////////////////////////////
   if (!values.current_status) {
     errors.current_status = 'Current Status is required';
@@ -36,9 +36,9 @@ export default function validate(values) {
   }
 
    /////////////////////////// associated_symtoms //////////////////////////////////////
-   if (!values.associated_symtoms) {
-    errors.associated_symtoms = 'Associated Symtoms is required';
-  }
+  //  if (!values.associated_symtoms) {
+  //   errors.associated_symtoms = 'Associated Symtoms is required';
+  // }
 
  
   return errors;

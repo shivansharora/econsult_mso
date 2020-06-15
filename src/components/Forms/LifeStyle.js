@@ -470,13 +470,13 @@ const LifeStyle = props => {
                             </Grid>
                             <Grid item xs={12} sm={4} md={4} >
                                 <Grid item xs={12} sm={2} md={2} >
-                                    <Typography style={{ fontWeight: 600 }} variant="body2">
+                                    <Typography style={{ fontWeight: 600,marginTop:-12 }} variant="body2">
                                         Sleep Pattern
                                 </Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={2} md={2} >
                                     <FormControl
-                                        style={{ minWidth: 120 }}
+                                        style={{ minWidth: 120,marginTop:-4 }}
                                         error={Boolean(errors.sleep_current_status)}
                                     >
                                         <InputLabel id="demo-simple-select-label">

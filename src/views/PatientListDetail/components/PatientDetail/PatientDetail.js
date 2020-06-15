@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from "@material-ui/core/styles";
 
+import axios from '../../../../utils/axios1';
 
 import Card from "../../../../components/Card/Card";
 import CardAvatar from "../../../../components/Card/CardAvatar";
@@ -24,7 +25,21 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 
 const useStyles = makeStyles(styles);
 
-const PatientDetail = () => {
+const PatientDetail = (props) => {
+  const { patient } = props;
+
+  if (patient.marital_status !== undefined) {
+    var obj = patient.marital_status
+    var key = Object.keys(obj)[1];
+    var value = obj[key];
+  }
+
+  if (patient.city !== undefined) {
+    var obj = patient.city
+    var key = Object.keys(obj)[1];
+    var valueCity = obj[key];
+  }
+
   const classes = useStyles();
   return (
     <div className={classes.root}>
@@ -35,75 +50,73 @@ const PatientDetail = () => {
           <Card profile className={classes.card} >
             <CardAvatar profile>
               <a href="#pablo" onClick={e => e.preventDefault()}>
-                <img src={avatar} alt="..." />
+                <img src={patient.profile_photo} alt="..." />
               </a>
             </CardAvatar>
             <CardBody style={{ marginTop: '-15px' }}>
 
-              <h6 className={classes.cardCategory} style={{ textAlign: 'center' }}>Anmol Jain
-            </h6><br />
+              <h6 className={classes.cardCategory} style={{ textAlign: 'center' }}>{patient.name}
+              </h6><br />
               <Grid container spacing={0}>
-                <Grid item xs={12} sm={12} md={12} >
-                  <div className={classes.stats}>
-                    <TodayIcon />
-                    <span style={{ fontWeight: 400 }}>Age:</span>
-                    <span>27</span>
-                  </div>
-                </Grid>
+                {patient.age ?
+                  <Grid item xs={12} sm={12} md={12} >
+                    <div className={classes.stats}>
+                      <TodayIcon />
+                      <span style={{ fontWeight: 400 }}>Age:</span>
+                      <span>{patient.age}</span>
+                    </div>
+                  </Grid> :
+                  <Grid item xs={12} sm={12} md={12} >
+                    <div className={classes.stats}>
+                      <DateRangeIcon />
+                      <span style={{ fontWeight: 400 }}>DOB:</span>
+                      <span>{patient.dob}</span>
+                    </div>
+                  </Grid>
+                }
+
                 <Grid item xs={12} sm={12} md={12} >
                   <div className={classes.stats}>
                     <WcIcon />
                     <span style={{ fontWeight: 400 }}>Gender:</span>
-                    <span> Male</span>
-                  </div>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12} >
-                  <div className={classes.stats}>
-                    <DateRangeIcon />
-                    <span style={{ fontWeight: 400 }}>DOB:</span>
-                    <span>20/06/1995</span>
+                    <span> {patient.gender}</span>
                   </div>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} >
                   <div className={classes.stats}>
                     <SupervisedUserCircleIcon />
                     <span style={{ fontWeight: 400 }}>Marital Status:</span>
-                    <span>Single</span>
+                    <span>{value}</span>
                   </div>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} >
                   <div className={classes.stats}>
                     <LocationOnIcon />
                     <span style={{ fontWeight: 400 }}>City:</span>
-                    <span>Delhi</span>
+                    <span>{valueCity}</span>
                   </div>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} >
                   <div className={classes.stats}>
                     <PhoneAndroidIcon />
                     <span style={{ fontWeight: 400 }}>Number:</span>
-                    <span>7017483927</span>
+                    <span>{patient.mobile}</span>
                   </div>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} >
                   <div className={classes.stats}>
                     <ContactlessIcon />
                     <span style={{ fontWeight: 400 }}>Emergency No:</span>
-                    <span>7017483927</span>
+                    <span>{patient.emergency_contact_no}</span>
                   </div>
                 </Grid>
                 <Grid item xs={12} sm={12} md={12} >
                   <div className={classes.stats}>
                     <EmailIcon />
                     <span style={{ fontWeight: 400 }}>Email:</span>
-                    <span>arorashivansh@gmail.com</span>
+                    <span>{patient.email}</span>
                   </div>
                 </Grid><br />
-                {/* <Grid item xs={12} sm={12} md={12} >
-                  <div style={{ marginLeft: '63px' }} className={classes.stats}>
-                    <CustomButton>Edit</CustomButton>
-                  </div>
-                </Grid> */}
               </Grid>
             </CardBody>
           </Card>

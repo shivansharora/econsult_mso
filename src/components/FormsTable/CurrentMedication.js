@@ -1,19 +1,56 @@
-import React, { useState } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState, useEffect } from 'react';
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import Button from '../CustomButtons/Button';
 import Card from '../Card/Card';
 import CardHeader from '../Card/CardHeader';
-// import CardIcon from '../Card/CardIcon';
 import CardBody from '../Card/CardBody';
-// import CardFooter from '../Card/CardFooter';
 import Grid from '@material-ui/core/Grid';
-// import Person from "@material-ui/icons/Person";
-import Table from '../Table/Table';
-// import VisibilityIcon from '@material-ui/icons/Visibility';
 import EditIcon from '@material-ui/icons/Edit';
 import CurrentMedication from '../Forms/CurrentMedication';
+import axios from '../../utils/axios';
+import Fab from '@material-ui/core/Fab';
+
+import {
+	createMuiTheme,
+} from "@material-ui/core/styles";
+
+import {
+	TableContainer,
+	Link,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableRow,
+	Tooltip
+} from '@material-ui/core';
+
+
+const theme = createMuiTheme({
+	overrides: {
+		MuiTooltip: {
+			tooltip: {
+				fontSize: "1em",
+				color: "black",
+				backgroundColor: "#84b786",
+			}
+		}
+	}
+});
+
+
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+		'&:nth-of-type(odd)': {
+			backgroundColor: theme.palette.action.hover,
+		},
+
+	},
+}))(TableRow);
+
+
 const styles = theme => ({
-      cardTitleWhite: {
+	cardTitleWhite: {
 		color: "#FFFFFF",
 		marginTop: "0px",
 		minHeight: "auto",
@@ -22,24 +59,30 @@ const styles = theme => ({
 		marginBottom: "3px",
 		textDecoration: "none"
 	},
-	icon:{
-		cursor:'pointer'
-	}
+	icon: {
+		cursor: 'pointer'
+	},
+	fab: {
+		margin: 2,
+		backgroundColor: '#66a668',
+		width: 50,
+		height: 42
+	},
 });
 
 const useStyles = makeStyles(styles);
 
-const AllergyList = () => {
+const CurrentMedicationList = () => {
 	const classes = useStyles();
 
 	const [openEdit, setOpenEdit] = useState(false);
 
 	const handleEditOpen = () => {
-	  setOpenEdit(true);
+		setOpenEdit(true);
 	};
-  
+
 	const handleEditClose = () => {
-	  setOpenEdit(false);
+		setOpenEdit(false);
 	};
 
 	return (
@@ -47,25 +90,59 @@ const AllergyList = () => {
 			<Grid >
 				<Grid item xs={12} sm={12} md={12} >
 					<Button style={{ float: 'right', marginTop: '-16px' }} onClick={handleEditOpen}>Add</Button>
-					<Card style={{ marginTop: '8px',boxShadow:'0 2px 8px rgba(0,0,0,0.30), 0 10px 12px rgba(0,0,0,0.22)' }}>
+					<Card style={{ marginTop: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.30), 0 10px 12px rgba(0,0,0,0.22)' }}>
 						<CardHeader style={{ width: '85px', padding: '7px', marginTop: '-17px' }} color="success" >
 							<h4 className={classes.cardTitleWhite}>Cuurent Medication</h4>
 						</CardHeader>
 						<CardBody>
-							<Table
-								tableHeaderColor="primary"
-								tableHead={["Drug Name", "Strength(mg)", "Drug Type","Frequency","Duration","Action"]}
-								tableData={[
-									["Crocin", "650","Cap","OD","4",
-									 <EditIcon
-									 onClick={handleEditOpen}
-									className={classes.icon}
-									 />]
-								]}
-							/>
-							<CurrentMedication 
-							onClose={handleEditClose}
-							open={openEdit}
+							<TableContainer className={classes.container}>
+								<Table stickyHeader aria-label="sticky table">
+									<TableHead >
+										<StyledTableRow >
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Drug Name</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Strength(mg)</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Drug Type</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Frequency</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Duration</TableCell>
+											<TableCell align="right" style={{ backgroundColor: '#6a7075', color: 'white' }}>Actions</TableCell>
+										</StyledTableRow>
+									</TableHead>
+									<TableBody>
+										{/* {family.map(family => ( */}
+										<StyledTableRow
+											hover
+										// key={family.id}
+										>
+											<TableCell></TableCell>
+											<TableCell></TableCell>
+											<TableCell></TableCell>
+											<TableCell></TableCell>
+											<TableCell></TableCell>
+
+
+											<TableCell align="right">
+												<Link
+													color="inherit"
+													onClick={handleEditOpen}
+													variant="h6"
+												>
+													<Tooltip title="Edit" aria-label="Edit">
+														<Fab className={classes.fab}>
+
+															<EditIcon
+															/>
+														</Fab>
+													</Tooltip>
+												</Link>
+											</TableCell>
+										</StyledTableRow>
+										{/* ))} */}
+									</TableBody>
+								</Table>
+							</TableContainer>
+							<CurrentMedication
+								onClose={handleEditClose}
+								open={openEdit}
 							/>
 						</CardBody>
 					</Card>
@@ -75,4 +152,4 @@ const AllergyList = () => {
 	);
 }
 
-export default AllergyList;
+export default CurrentMedicationList;

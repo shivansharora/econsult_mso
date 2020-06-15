@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect, useState} from 'react';
 import { makeStyles } from "@material-ui/core/styles";
 import { Grid, Typography } from '@material-ui/core';
 
@@ -11,6 +11,7 @@ import CardBody from '../../components/Card/CardBody';
 import CardFooter from '../../components/Card/CardFooter';
 import CardAvatar from '../../components/Card/CardAvatar';
 import { Page } from 'components';
+import axios from '../../utils/axios1';
 
 import avatar from "../../assets/img/patient.png";
 import styles from "../../assets/jss/material-dashboard-react/views/DoctorBio";
@@ -20,7 +21,7 @@ import StarIcon from '@material-ui/icons/Star';
 
 const useStyles = makeStyles(styles);
 
-const DoctorBio = () => {
+const DoctorBio = (props) => {
 	const classes = useStyles();
 	const stat = {
 		color: '#352e2e',
@@ -44,6 +45,37 @@ const DoctorBio = () => {
 			marginLeft: "5px"
 		}
 	}
+	const [doctor , setDoc] = useState([])
+
+	useEffect(() => {
+		let mounted = true;
+	
+		const fetchCatOne = () => {
+			if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+				let token = "Bearer " + localStorage.getItem("jwt");
+		  axios.get(`/users/${props.match.params.id}`,{ headers: { Authorization: token } }).then(response => {
+					if (mounted) {
+						setDoc(response.data);
+						console.log(response.data)
+					}
+	
+				}).catch(error => {
+					if (error.response.data != "") {
+						alert(error.response.data.error);
+					} else {
+						alert(error.response.statusText);
+					}
+				});
+		}
+	}
+	
+		fetchCatOne();
+	
+		return () => {
+		  mounted = false;
+		};
+	  }, []);
+
 	return (
 		<Page
 			className={classes.root}
@@ -58,13 +90,13 @@ const DoctorBio = () => {
 							</a>
 						</CardAvatar>
 						<CardBody >
-							<h5 className={classes.cardCategory} style={{ textAlign: 'center', fontSize: '19px', fontWeight: 300 }}>Raj Kumar
+							<h5 className={classes.cardCategory} style={{ textAlign: 'center', fontSize: '19px', fontWeight: 300 }}>{doctor.name}
                             </h5>
 							<h5 className={classes.cardCategory} style={{ textAlign: 'center', display: 'inline-flex', marginLeft: '54px' }}>
-								<LocalHospitalTwoToneIcon /> Cardiologist
+								<LocalHospitalTwoToneIcon /> {doctor.designation}
                             </h5><br />
 							<h5 className={classes.cardCategory} style={{ textAlign: 'center', display: 'inline-flex', marginLeft: '54px' }}>
-								<AccountBalanceWalletTwoToneIcon />Fees :200
+								<AccountBalanceWalletTwoToneIcon />Fees :{doctor.fee}
                             </h5>
 							<br /><br />
 
@@ -124,7 +156,7 @@ const DoctorBio = () => {
 											<Typography className={classes.typo} variant="body2">Registration No</Typography>
 											<br />
 											<Typography className={classes.typoResult} variant="h6">
-												114587569
+												{doctor.medical_registration_no}
                                         </Typography>
 
 										</div>
@@ -134,7 +166,7 @@ const DoctorBio = () => {
 											<Typography className={classes.typo} variant="body2">Work Experiance</Typography>
 											<br />
 											<Typography className={classes.typoResult} variant="h6">
-												6 Years
+												{doctor.work_experience}
                                         </Typography>
 
 										</div>
@@ -145,8 +177,7 @@ const DoctorBio = () => {
 											<br />
 											<Typography className={classes.typoResult} variant="h6">
 												<ul>
-													<li>Worked in AIIMS (2010-2018)</li>
-													<li>Fortis Hospital, Shalimar Bagh(2018-2020)</li>
+													<li>{doctor.detailed_experience}</li>
 												</ul>
 											</Typography>
 
@@ -158,8 +189,7 @@ const DoctorBio = () => {
 											<br />
 											<Typography className={classes.typoResult} variant="h6">
 												<ul>
-													<li>CHIEF OF THE DEPARTMENT OF FAMILY PRACTICE </li>
-													<li>CHIEF OF THE DEPARTMENT OF FAMILY PRACTICE </li>
+													{doctor.awards_n_achievements}
 												</ul>
 											</Typography>
 
@@ -196,7 +226,7 @@ const DoctorBio = () => {
 											<Typography className={classes.typo} variant="body2">Summary</Typography>
 											<br />
 											<Typography className={classes.typoResult} variant="h6">
-
+                                                {doctor.summary}
 											</Typography>
 
 										</div>

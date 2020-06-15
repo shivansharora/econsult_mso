@@ -1,5 +1,7 @@
-import React, { Suspense, useState } from 'react';
+
+import React, { Suspense, useState,useEffect } from 'react';
 import { renderRoutes } from 'react-router-config';
+import  { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { LinearProgress } from '@material-ui/core';
@@ -41,7 +43,14 @@ const Dashboard = props => {
 
   const classes = useStyles();
   const [openNavBarMobile, setOpenNavBarMobile] = useState(false);
+ 
 
+  useEffect(()=>{
+    if (localStorage.getItem("jwt") === '' || localStorage.getItem("jwt") === null) {
+      props.history.push("/auth/login");
+    }
+
+  })
   const handleNavBarMobileOpen = () => {
     setOpenNavBarMobile(true);
   };
@@ -49,23 +58,27 @@ const Dashboard = props => {
   const handleNavBarMobileClose = () => {
     setOpenNavBarMobile(false);
   };
+  
+
 
   return (
-    <div className={classes.root}>
-      <div className={classes.container}>
-        <NavBar
-          className={classes.navBar}
-          onMobileClose={handleNavBarMobileClose}
-          openMobile={openNavBarMobile}
-          // key="nav"
-        />
-        <main style={{ marginTop:'54px' }} className={classes.content}>
-          <Suspense fallback={<LinearProgress />}>
-            {renderRoutes(route.routes)}
-          </Suspense>
-        </main>
-      </div>
-    </div>
+  
+  <div className={classes.root}>
+  <div className={classes.container}>
+    <NavBar
+      className={classes.navBar}
+      onMobileClose={handleNavBarMobileClose}
+      openMobile={openNavBarMobile}
+      // key="nav"
+    />
+    <main style={{ marginTop:'54px' }} className={classes.content}>
+      <Suspense fallback={<LinearProgress />}>
+        {renderRoutes(route.routes)}
+      </Suspense>
+    </main>
+  </div>
+</div>
+  
   );
 };
 

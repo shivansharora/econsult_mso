@@ -8,7 +8,7 @@ import {
 import Tabs from '../../components/Tabs/Tab';
 import CustomTabs from '../../components/CustomTabs/CustomTabs'
 import SearchBar from '../../components/SearchBar/SearchBar';
-import axios from '../../utils/axios';
+import axios from '../../utils/axios1';
 
 
 import CategoryCard from './Cat/DoctorCard/DoctorCard'
@@ -71,38 +71,78 @@ const DoctorCategory = () => {
     let mounted = true;
 
     const fetchCatOne = () => {
-      axios.get('/api/doctorcategory').then(response => {
-        if (mounted) {
-          setCatOne(response.data.CatOne);
-          // console.log(response.data.CatOne);
-        }
-      });
-    };
+      if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+        let token = "Bearer " + localStorage.getItem("jwt");
+      axios.get('get_doctors_by_category_id/1',{ headers: { Authorization: token } }).then(response => {
+				if (mounted) {
+					setCatOne(response.data);
+					console.log(response.data)
+				}
 
-    const fetchCatSecond = () => {
-      axios.get('/api/categorytwo').then(response => {
-        if (mounted) {
-          setCatTwo(response.data.CatTwo);
-          // console.log(response.data.CatTwo);
-        }
-      });
-    };
+			}).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+    }
+  }
+  const fetchCatSecond = () => {
+    if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+      let token = "Bearer " + localStorage.getItem("jwt");
+    axios.get('get_doctors_by_category_id/2',{ headers: { Authorization: token } }).then(response => {
+      if (mounted) {
+        setCatTwo(response.data);
+        console.log(response.data)
+      }
 
-    const fetchCatThird = () => {
-      axios.get('/api/categorythree').then(response => {
-        if (mounted) {
-          setCatThird(response.data.CatThree);
-        }
-      });
-    };
+    }).catch(error => {
+      if (error.response.data != "") {
+        alert(error.response.data.error);
+      } else {
+        alert(error.response.statusText);
+      }
+    });
+  }
+}
+const fetchCatThird = () => {
+  if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+    let token = "Bearer " + localStorage.getItem("jwt");
+  axios.get('get_doctors_by_category_id/3',{ headers: { Authorization: token } }).then(response => {
+    if (mounted) {
+      setCatThird(response.data);
+      console.log(response.data)
+    }
 
-    const fetchCatForth = () => {
-      axios.get('/api/categoryfour').then(response => {
-        if (mounted) {
-          setCatForth(response.data.CatFour);
-        }
-      });
-    };
+  }).catch(error => {
+    if (error.response.data != "") {
+      alert(error.response.data.error);
+    } else {
+      alert(error.response.statusText);
+    }
+  });
+}
+}
+const fetchCatForth = () => {
+  if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+    let token = "Bearer " + localStorage.getItem("jwt");
+  axios.get('get_doctors_by_category_id/4',{ headers: { Authorization: token } }).then(response => {
+    if (mounted) {
+      setCatForth(response.data);
+      console.log(response.data)
+    }
+
+  }).catch(error => {
+    if (error.response.data != "") {
+      alert(error.response.data.error);
+    } else {
+      alert(error.response.statusText);
+    }
+  });
+}
+}
+
 
     fetchCatOne();
     fetchCatSecond();
@@ -173,7 +213,7 @@ const DoctorCategory = () => {
                     >
                       <Grid item xs={12} sm={12} md={12} >
                         <SearchBar
-                          onSearch={e => setSearch(e.target.value)}
+                          // onSearch={e => setSearch(e.target.value)}
 
                         />
                       </Grid>
@@ -185,12 +225,12 @@ const DoctorCategory = () => {
                             variant="body2"
                           >
 
-                            {filteredCatOne.length} Records found. Page {page + 1} of{' '}
-                            {Math.ceil(filteredCatOne.length / rowsPerPage)}
+                            {CatOne.length} Records found. Page {page + 1} of{' '}
+                            {Math.ceil(CatOne.length / rowsPerPage)}
                           </Typography>
                         </div>
                       </Grid>
-                      {filteredCatOne.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
+                      {CatOne.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
                         <Grid
                           item
                           key={doctor.id}
@@ -208,7 +248,7 @@ const DoctorCategory = () => {
                     <div className={classes.paginate}>
                       <TablePagination
                         component="div"
-                        count={filteredCatOne.length}
+                        count={CatOne.length}
                         onChangePage={handleChangePage}
                         onChangeRowsPerPage={handleChangeRowsPerPage}
                         page={page}
@@ -232,7 +272,7 @@ const DoctorCategory = () => {
                     >
                       <Grid item xs={12} sm={12} md={12} >
                         <SearchBar
-                          onSearch={e => setSearch(e.target.value)}
+                          // onSearch={e => setSearch(e.target.value)}
 
                         />
                       </Grid>
@@ -244,12 +284,12 @@ const DoctorCategory = () => {
                             variant="body2"
                           >
 
-                            {filteredCatTwo.length} Records found. Page {page + 1} of{' '}
-                            {Math.ceil(filteredCatTwo.length / rowsPerPage)}
+                            {CatTwo.length} Records found. Page {page + 1} of{' '}
+                            {Math.ceil(CatTwo.length / rowsPerPage)}
                           </Typography>
                         </div>
                       </Grid>
-                      {filteredCatTwo.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
+                      {CatTwo.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
                         <Grid
                           item
                           key={doctor.id}
@@ -266,7 +306,7 @@ const DoctorCategory = () => {
                     <div className={classes.paginate}>
                       <TablePagination
                         component="div"
-                        count={filteredCatTwo.length}
+                        count={CatTwo.length}
                         onChangePage={handleChangePage}
                         onChangeRowsPerPage={handleChangeRowsPerPage}
                         page={page}
@@ -289,7 +329,7 @@ const DoctorCategory = () => {
                     >
                       <Grid item xs={12} sm={12} md={12} >
                         <SearchBar
-                          onSearch={e => setSearch(e.target.value)}
+                          // onSearch={e => setSearch(e.target.value)}
 
                         />
                       </Grid>
@@ -301,12 +341,12 @@ const DoctorCategory = () => {
                             variant="body2"
                           >
 
-                            {filteredCatThree.length} Records found. Page {page + 1} of{' '}
-                            {Math.ceil(filteredCatThree.length / rowsPerPage)}
+                            {CatThree.length} Records found. Page {page + 1} of{' '}
+                            {Math.ceil(CatThree.length / rowsPerPage)}
                           </Typography>
                         </div>
                       </Grid>
-                      {filteredCatThree.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
+                      {CatThree.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
                         <Grid
                           item
                           key={doctor.id}
@@ -323,7 +363,7 @@ const DoctorCategory = () => {
                     <div className={classes.paginate}>
                       <TablePagination
                         component="div"
-                        count={filteredCatThree.length}
+                        count={CatThree.length}
                         onChangePage={handleChangePage}
                         onChangeRowsPerPage={handleChangeRowsPerPage}
                         page={page}
@@ -358,12 +398,12 @@ const DoctorCategory = () => {
                             variant="body2"
                           >
 
-                            {filteredCatFour.length} Records found. Page {page + 1} of{' '}
-                            {Math.ceil(filteredCatFour.length / rowsPerPage)}
+                            {CatFour.length} Records found. Page {page + 1} of{' '}
+                            {Math.ceil(CatFour.length / rowsPerPage)}
                           </Typography>
                         </div>
                       </Grid>
-                      {filteredCatFour.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
+                      {CatFour.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(doctor => (
                         <Grid
                           item
                           key={doctor.id}
@@ -380,7 +420,7 @@ const DoctorCategory = () => {
                     <div className={classes.paginate}>
                       <TablePagination
                         component="div"
-                        count={filteredCatFour.length}
+                        count={CatFour.length}
                         onChangePage={handleChangePage}
                         onChangeRowsPerPage={handleChangeRowsPerPage}
                         page={page}

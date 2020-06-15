@@ -1,17 +1,53 @@
-import React, { useState } from 'react';
-import { makeStyles } from "@material-ui/core/styles";
+import React, { useState,useEffect } from 'react';
+import { makeStyles,withStyles } from "@material-ui/core/styles";
 import Button from '../CustomButtons/Button';
 import Card from '../Card/Card';
 import CardHeader from '../Card/CardHeader';
-// import CardIcon from '../Card/CardIcon';
 import CardBody from '../Card/CardBody';
-// import CardFooter from '../Card/CardFooter';
 import Grid from '@material-ui/core/Grid';
-// import Person from "@material-ui/icons/Person";
-import Table from '../Table/Table';
-// import VisibilityIcon from '@material-ui/icons/Visibility';
 import Lifestyle from '../Forms/LifeStyle';
 import EditIcon from '@material-ui/icons/Edit';
+import axios from '../../utils/axios';
+import Fab from '@material-ui/core/Fab';
+
+import {
+	createMuiTheme,
+} from "@material-ui/core/styles";
+
+import {
+	TableContainer,
+	Link,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableRow,
+	Tooltip
+} from '@material-ui/core';
+
+
+const theme = createMuiTheme({
+	overrides: {
+		MuiTooltip: {
+			tooltip: {
+				fontSize: "1em",
+				color: "black",
+				backgroundColor: "#84b786",
+			}
+		}
+	}
+});
+
+
+const StyledTableRow = withStyles((theme) => ({
+	root: {
+		'&:nth-of-type(odd)': {
+			backgroundColor: theme.palette.action.hover,
+		},
+
+	},
+}))(TableRow);
+
 const styles = theme => ({
       cardTitleWhite: {
 		color: "#FFFFFF",
@@ -24,7 +60,13 @@ const styles = theme => ({
 	},
 	icon:{
 		cursor:'pointer'
-	}
+	},
+	fab: {
+		margin: 2,
+		backgroundColor: '#66a668',
+		width: 50,
+		height: 42
+	},
 });
 
 const useStyles = makeStyles(styles);
@@ -52,17 +94,53 @@ const LifestyleList = () => {
 							<h4 className={classes.cardTitleWhite}>Lifestyle</h4>
 						</CardHeader>
 						<CardBody>
-							<Table
-								tableHeaderColor="primary"
-								tableHead={[ "Title","Current Status","Frequency","Quantity","Start Date","End Date", "Action"]}
-								tableData={[
-									["Alcohol", "Current","Daily","10","25/06/2015","31/03/2020",
-									 <EditIcon
-									 onClick={handleEditOpen}
-									className={classes.icon}
-									 />]
-								]}
-							/>
+						<TableContainer className={classes.container}>
+								<Table stickyHeader aria-label="sticky table">
+									<TableHead >
+										<StyledTableRow >
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Title</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Current Status</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Frequency</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Quantity</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>Start Date</TableCell>
+											<TableCell style={{ backgroundColor: '#6a7075', color: 'white' }}>End Date</TableCell>
+											<TableCell align="right" style={{ backgroundColor: '#6a7075', color: 'white' }}>Actions</TableCell>
+										</StyledTableRow>
+									</TableHead>
+									<TableBody>
+										{/* {family.map(family => ( */}
+											<StyledTableRow
+												hover
+												// key={family.id}
+											>
+												<TableCell></TableCell>
+												<TableCell></TableCell>
+												<TableCell></TableCell>
+												<TableCell></TableCell>
+												<TableCell></TableCell>
+												<TableCell></TableCell>
+
+
+												<TableCell align="right">
+													<Link
+														color="inherit"
+														onClick={handleEditOpen}
+														variant="h6"
+													>
+														<Tooltip title="Edit" aria-label="Edit">
+															<Fab className={classes.fab}>
+
+																<EditIcon
+																/>
+															</Fab>
+														</Tooltip>
+													</Link>
+												</TableCell>
+											</StyledTableRow>
+										{/* ))} */}
+									</TableBody>
+								</Table>
+							</TableContainer>
 							<Lifestyle 
 							onClose={handleEditClose}
 							open={openEdit}

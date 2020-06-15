@@ -17,6 +17,7 @@ import {
   colors
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+import BookIcon from '@material-ui/icons/Book';
 
 import getInitials from '../../../utils/getInitials';
 
@@ -80,6 +81,7 @@ const ProjectCard = props => {
   const { project, className, ...rest } = props;
 
   const classes = useStyles();
+  
 
   const statusColors = {
     'In progress': colors.orange[600],
@@ -97,9 +99,8 @@ const ProjectCard = props => {
           <Avatar
             alt="Author"
             className={classes.avatar}
-            src={project.author.avatar}
+            src={project.profile_photo}
           >
-            {getInitials(project.author.name)}
           </Avatar>
           <div>
             <Typography style={{ fontWeight: 500 }} variant="body2">
@@ -113,10 +114,11 @@ const ProjectCard = props => {
               variant="h5"
               style={{ fontSize: 'unset', fontWeight: 300 }}
             >
-              {project.title}
+              {project.name}
             </Link>
           </div>
         </div>
+        {project.age ?
         <div className={classes.stats}>
           <Typography style={{ fontWeight: 500 }} variant="body2">Age</Typography>
           <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
@@ -124,9 +126,16 @@ const ProjectCard = props => {
           </Typography>
 
         </div>
+        : <div className={classes.stats}>
+        <Typography style={{ fontWeight: 500 }} variant="body2">DOB</Typography>
+        <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
+          {project.dob}
+        </Typography>
+
+      </div>}
         <div className={classes.stats}>
           <Typography style={{ fontWeight: 500 }} variant="body2">Number</Typography>
-          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">{project.number}</Typography>
+          <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">{project.mobile}</Typography>
 
         </div>
         <div className={classes.stats}>
@@ -137,14 +146,14 @@ const ProjectCard = props => {
         <div className={classes.stats}>
           <Typography style={{ fontWeight: 500 }} variant="body2">Registered Date</Typography>
           <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
-            {moment(project.start_date).format('DD MMMM YYYY')}
+            {(project.created_at)}
           </Typography>
 
         </div>
         <div className={classes.stats}>
           <Typography style={{ fontWeight: 500 }} variant="body2">Last Visit Date</Typography>
           <Typography style={{ fontSize: 'unset', fontWeight: 300 }} variant="h6">
-            {moment(project.end_date).format('DD MMMM YYYY')}
+            {project.last_visit_date}          
           </Typography>
 
         </div>
@@ -153,7 +162,8 @@ const ProjectCard = props => {
           <Link
             color="inherit"
             component={RouterLink}
-            to="/patient_list/1"
+            to={`/patient_list/${project.id}`}
+          
             variant="h6"
           >
             <Tooltip title="View" aria-label="View">
@@ -173,6 +183,20 @@ const ProjectCard = props => {
               <Fab className={classes.fab}>
 
                 <EditIcon
+                />
+              </Fab>
+            </Tooltip>
+          </Link>
+          <Link
+            color="inherit"
+            component={RouterLink}
+            to={`/create_appointment/${project.id}`}
+            variant="h6"
+          >
+            <Tooltip title="Book Appointment " aria-label="Book Appointment ">
+              <Fab className={classes.fab}>
+
+                <BookIcon
                 />
               </Fab>
             </Tooltip>

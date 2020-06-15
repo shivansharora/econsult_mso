@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { Link as RouterLink } from 'react-router-dom';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-import axios from '../../utils/axios';
+import axios from '../../utils/axios1';
 import Paginate from '../../components/Paginate/Paginate';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ProjectCard from './PatientCard/PatientCard';
@@ -32,7 +32,7 @@ const PatientList = () => {
   const classes = useStyles();
   const [search, setSearch] = useState('');
   const [filteredPatients, setFilteredPatients] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -48,11 +48,21 @@ const PatientList = () => {
     let mounted = true;
 
     const fetchProjects = () => {
-      axios.get('/api/projects').then(response => {
+      if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+        let token = "Bearer " + localStorage.getItem("jwt");
+       axios.get('/patients',{ headers: { Authorization: token } }).then(response => {
         if (mounted) {
-          setProjects(response.data.projects);
+          setPatients(response.data);
+          console.log(response.data)
         }
-      });
+      }).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+    }
     };
 
     fetchProjects();
@@ -64,13 +74,13 @@ const PatientList = () => {
 
   useEffect(() => {
     setFilteredPatients(
-      projects.filter(project => {
-        return Object.keys(project).some(key =>
-          project[key].toString().toLowerCase().includes(search.toLowerCase())
+      patients.filter(patient => {
+        return Object.keys(patient).some(key =>
+          patient[key].toString().toLowerCase().includes(search.toLowerCase())
         );
       })
     );
-  }, [search, projects]);
+  }, [search, patients]);
 
 
 
@@ -79,7 +89,7 @@ const PatientList = () => {
       <Grid >
         <Grid item xs={12} sm={12} md={12} >
           <SearchBar
-            onSearch={e => setSearch(e.target.value)}
+            // onSearch={e => setSearch(e.target.value)}
           />
           <Button
             className={classes.filterButton}

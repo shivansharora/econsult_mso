@@ -6,7 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { Link as RouterLink } from 'react-router-dom';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-import axios from '../../utils/axios';
+import axios from '../../utils/axios1';
 import Paginate from '../../components/Paginate/Paginate';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ProjectCard from './AppointmentCard/AppointmentCard';
@@ -35,7 +35,7 @@ const AppointmentList = () => {
   const [projects, setProjects] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
+  const [appointments , setAppointments] = useState([])
   const handleChangePage = (event, page) => {
     setPage(page);
   };
@@ -43,34 +43,44 @@ const AppointmentList = () => {
   const handleChangeRowsPerPage = event => {
     setRowsPerPage(event.target.value);
   };
-
+  
   useEffect(() => {
     let mounted = true;
 
-    const fetchProjects = () => {
-      axios.get('/api/bookinglist').then(response => {
+    const fetchAppointment = () => {
+      if (localStorage.getItem("jwt") != '' || localStorage.getItem("jwt") !== undefined) {
+        let token = "Bearer " + localStorage.getItem("jwt");
+       axios.get('/patient_appointments',{ headers: { Authorization: token } }).then(response => {
         if (mounted) {
-          setProjects(response.data.projects);
+          setAppointments(response.data);
+          console.log(response.data);
         }
-      });
+      }).catch(error => {
+				if (error.response.data != "") {
+					alert(error.response.data.error);
+				} else {
+					alert(error.response.statusText);
+				}
+			});
+    }
     };
 
-    fetchProjects();
+    fetchAppointment();
 
     return () => {
       mounted = false;
     };
   }, []);
 
-  useEffect(() => {
-    setFilteredPatients(
-      projects.filter(project => {
-        return Object.keys(project).some(key =>
-          project[key].toString().toLowerCase().includes(search.toLowerCase())
-        );
-      })
-    );
-  }, [search, projects]);
+  // useEffect(() => {
+  //   setFilteredPatients(
+  //     projects.filter(project => {
+  //       return Object.keys(project).some(key =>
+  //         project[key].toString().toLowerCase().includes(search.toLowerCase())
+  //       );
+  //     })
+  //   );
+  // }, [search, projects]);
 
 
 
@@ -100,10 +110,10 @@ const AppointmentList = () => {
               gutterBottom
               variant="body2"
             >
-              {filteredPatients.length} Records found. Page {page + 1} of{' '}
-              {Math.ceil(filteredPatients.length / rowsPerPage)}
+              {appointments.length} Records found. Page {page + 1} of{' '}
+              {Math.ceil(appointments.length / rowsPerPage)}
             </Typography>
-            {filteredPatients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(project => (
+            {appointments.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(project => (
               <ProjectCard
                 key={project.id}
                 project={project}
@@ -113,7 +123,7 @@ const AppointmentList = () => {
           <div className={classes.paginate}>
             <TablePagination
               component="div"
-              count={filteredPatients.length}
+              count={appointments.length}
               onChangePage={handleChangePage}
               onChangeRowsPerPage={handleChangeRowsPerPage}
               page={page}
@@ -130,3 +140,5 @@ const AppointmentList = () => {
 };
 
 export default AppointmentList;
+
+

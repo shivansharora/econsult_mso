@@ -1,11 +1,11 @@
 const type = [
 	
 	{
-		value: 'Individual',
+		value: 'individual',
 		label: 'Individual',
 	},
 	{
-		value: 'Category',
+		value: 'category',
 		label: 'Category',
 	},
 	

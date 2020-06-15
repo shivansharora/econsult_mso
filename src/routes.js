@@ -42,6 +42,7 @@ const routes = [
       }
     ]
   },
+  
   {
     route: '*',
     component: DashboardLayout,
@@ -88,9 +89,19 @@ const routes = [
         component: lazy(() => import('./views/BookAppointment/BookAppointment'))
       },
       {
+        path: '/create_appointment/:id',
+        exact: true,
+        component: lazy(() => import('./views/BookAppointment/CreateAppointment/CreateAppointment'))
+      },
+      {
         path: '/appointment_detail/:id',
         exact: true,
         component: lazy(() => import('./views/AppointmentList/AppointmentDetail'))
+      },
+      {
+        path: '/change_appointment_status/:id/:type',
+        exact: true,
+        component: lazy(() => import('./views/AppointmentList/ChangeAppointmentStatus/ChangeAppointmentStatus'))
       },
       {
         path: '/edit_book_appointment/:id',
@@ -107,6 +118,11 @@ const routes = [
         path: '/flow_board',
         exact: true,
         component: lazy(() => import('./views/FlowBoard/FlowBoard'))
+      },
+      {
+        path: '/change_flowboard_status/:id/:type',
+        exact: true,
+        component: lazy(() => import('./views/FlowBoard/StatusChangeForm/StatusChangeForm'))
       },
       {
         path: '/notification',
